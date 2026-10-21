@@ -1,2 +1,83 @@
 # Craftsman-Excavator-Operation-CBT
-굴착기운전기능사
+
+굴착기운전기능사 필기 CBT. 비공식 학습용 React + TypeScript + Vite 앱이며 서버·로그인·유료 API가 필요하지 않습니다.
+
+## 적용 표준과 기능
+
+`electrician-cbt` 최신 main의 스킬 **v1.4.0** (`76b990b8720adfa85c22a0a8f699b17094aa357b`) 폴더 전체를 `.agents/skills/cbt-site-standard/`로 복사하고 `AGENTS.md`를 연결했습니다. 기존 AGENTS.md는 없었습니다. 앱 소스는 표준의 고정 커밋 `b9a682ccff1b460334b78d5bfad9375b7ec4fbb6`을 재사용했으며 MIT 고지를 보존했습니다. 원본 프로젝트를 수정하거나 배포하지 않았습니다.
+
+- 실전 모의시험: 무작위 고유 60문항, 절대 종료 시각, 답안 변경·즉시 저장·새로고침 복원, 시간 만료 자동 제출, 결과·전체 해설·오답 복습.
+- 랜덤 문제풀이: 통합 과목/전체 선택, 한 순회 내 중복 방지, 즉시 채점, 연속 정답·정답률, 이어하기.
+- 실전과 랜덤 모두 답안 선택 후 Space로 다음 문제. 미응답·길게 누르기·입력 컨트롤·메뉴·대화상자 보호, 마지막 실전 문항에서 자동 제출 안 함.
+- 오답노트·북마크·통계·최근 시험·JSON 학습 기록 백업, 확인 후 초기화. **백업 복원 UI는 없음**.
+- JSON/CSV 양식·가져오기·중복 제거·검증 대기·근거 입력 후 로컬 검수 승인·검색·필터·페이지·문항 내보내기. 로컬 가져오기는 공용 문제은행을 수정하지 않음.
+- 학습 기준/연도 버전 선택 메뉴와 상단 상시 면책 배너 없음. 출처·권리·검수 한계는 문제 해설과 문제은행 관리·문서에서 제공.
+- 모바일 고정 메뉴는 독립 세로 스크롤, 동적 뷰포트 높이, 항목 축소 방지와 스크롤 전파 제한 적용.
+
+## 시험 규칙과 문항 수: 미완료 범위
+
+Q-Net 공식 종목 페이지 요청이 네트워크 프록시의 `CONNECT tunnel failed, response 403`으로 차단되어 **공식 규칙·출제기준·기출 이용 조건 대조는 미완료**입니다. 현재 통합 과목 `굴착기 조종, 점검 및 안전관리`, 60문항·60분·4지선다·100점 환산·60점 이상 합격·과락 없음은 공식 확인을 마친 값이 아닌 **학습용 가정**입니다. 미응답은 오답, 합격 판정은 반올림 전 비율로 처리합니다. 실제 수험 전 Q-Net 공고 확인이 필요합니다. 설정과 확인 상태는 `src/qualification.json`에서 관리합니다. [시험 규칙 확인 기록](docs/exam-rules.md).
+
+**기본 은행 내부 검토 72문항, 목표 1,000문항까지 928문항 부족. 수량 표준 미충족.**
+
+| 유형 | 실제 기본 등록 수 |
+| --- | ---: |
+| 원문 기출 | 0 |
+| 복원 | 0 |
+| 자체 제작 개념형 | 72 |
+| 계산형 / 숫자 조건 변형 / 변형 family | 0 / 0 / 0 |
+| 검증 대기 / 제외 중복 | 0 / 0 |
+
+통합 과목 1개, 아래 6개 학습 단원에 각 12문항입니다. 단원 비중은 공식 출제 비중이 아닙니다.
+
+| 단원 | 수 |
+| --- | ---: |
+| 기관 기초 | 12 |
+| 유압장치 | 12 |
+| 전기·동력전달 | 12 |
+| 작업장치·점검 | 12 |
+| 조종·작업 | 12 |
+| 현장 안전 | 12 |
+
+AI 일반 지식으로 직접 작성한 원고이며 문장·정답의 내부 검토만 수행했습니다. 외부 전문가 검수·공식 출제기준 대조·실장비 검증은 하지 않았습니다. 연도·회차는 모두 null입니다. 저장소 출처 링크는 작성 기록이며 외부 정답 증빙이 아닙니다. [문항별 검토 기록·이용 조건](docs/question-review.md), [구조 검증 집계](docs/bank-audit.json). 개념 겹침과 검수 한계도 기록했습니다. 원고/데이터는 CC BY 4.0, 앱 재사용 코드는 MIT입니다.
+
+## 개발 및 검증
+
+Node.js 24.19.0 (`.node-version`), npm 11.9.0. 기존 클라우드 체크아웃을 사용하며 별도 Git worktree를 만들 필요가 없습니다.
+
+```bash
+cd /workspace/Craftsman-Excavator-Operation-CBT
+npm ci --cache /workspace/.npm-cache --no-audit --no-fund
+npm run dev -- --port 5173 --strictPort
+```
+
+```bash
+npm test
+npm run build
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e
+python3 scripts/audit-bank.py
+```
+
+일반 PC/CI에서 Playwright 관리 브라우저를 쓰려면 `npx playwright install --with-deps chromium`을 먼저 실행한 뒤 `npm run test:e2e`를 사용합니다. 클라우드에서는 기존 `/usr/bin/chromium`을 사용해 실제 검증했습니다. 원고 재생성은 `python3 scripts/build-bank.py`이며 ID·순서·보기 순서는 결정적입니다. 원고 변경 시 내용 검토와 구조 검증을 다시 해야 합니다.
+
+최종 로컬 결과: **단위 18/18, 브라우저 26/26 통과**, 타입 검사 포함 프로덕션 빌드 성공. PC Chromium 및 Pixel 7 에뮬레이션에서 두 모드·저장·만료·Space·가져오기·승인·초기화와 메뉴를 검증했습니다. 작은 높이 390×480, 가로 740×360, 글자 150% 조건에서 실제 휠, 모바일의 별도 CDP 터치 스와이프로 하단 도구를 클릭/탭하고 상단 대시보드로 복귀했습니다. 실기기·Safari·iframe 내 동작은 미실행입니다. [검증 범위](docs/validation.md).
+
+## 저장 정책
+
+고유 localStorage 키 `excavator-cbt:v1`, 최근 응답 5,000개·시험 30회 보존. 손상된 저장 원본은 자동 덮어쓰지 않고 저장 실패를 경고합니다. 기록은 브라우저와 origin별로 나뉘며 비공개 모드나 iframe 저장 제한을 받을 수 있습니다. 초기화는 사용자 데이터만 지우고 기본 은행은 유지합니다.
+
+## GitHub 및 배포 상태
+
+사용자는 main push → 검증 성공 → Pages 자동 배포를 요청했습니다. `.github/workflows/pages.yml`은 해당 흐름을 준비하며 PR에서는 검증만 합니다. deploy job은 validate에 의존하고 Pages/ID 토큰 쓰기 권한은 deploy job에만 있습니다.
+
+**현재 배포는 사전 확인 단계에서 차단되어 시작하지 않았습니다.** Git 원격 main 읽기는 성공했으나, 토큰 존재 확인 후 실제 저장소 권한 확인 API에서 다음 오류가 발생했습니다.
+
+```text
+Get "https://api.github.com/repos/YunSangYeong/Craftsman-Excavator-Operation-CBT": Forbidden
+```
+
+첫 차단 중단 정책에 따라 API 재조회, main 푸시, Actions 실행·재실행, 대체 배포, 배포 유발 추가 푸시를 하지 않았습니다. 이번 구현의 원격 반영·CI·Pages 배포·공개 화면 확인은 모두 미완료입니다. 기존 원격 main은 `3267a18082eaddbf2f9e11786a8282f421117380`입니다. 로컬 결과는 Git 커밋으로 보존합니다.
+
+예상 기본 주소: https://YunSangYeong.github.io/Craftsman-Excavator-Operation-CBT/ — **게시 및 접근 성공을 확인한 주소가 아닙니다.** 현재 Pages Source·승인 정책·기존 게시 여부는 API 거부 때문에 확인하지 못했습니다. 최초 Pages 설정이 없다고 단정하지 않습니다.
+
+현재 환경의 제한 네트워크 허용 목록에 `api.github.com`이 없었습니다. 사용자가 마무리하기 전 첫 동작은 **환경 설정의 네트워크 허용 도메인에 `api.github.com`을 추가하고 저장**하는 것입니다. 이 조치만으로 GitHub API 권한이나 배포 성공이 보장되지는 않습니다. 공식 자료 확인에는 별도로 `www.q-net.or.kr` 허용이 필요합니다. 에이전트는 사용자 요청에 따라 여기서 배포를 중단하며 설정 변경을 추정해 재시도하지 않습니다.
