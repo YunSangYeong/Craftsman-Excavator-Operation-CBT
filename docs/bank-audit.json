@@ -1,26 +1,61 @@
 {
-  "registered": 72,
-  "internallyReviewed": 72,
+  "registered": 1000,
+  "internallyReviewed": 1000,
   "pending": 0,
   "excludedDuplicates": 0,
   "target": 1000,
-  "shortfall": 928,
+  "shortfall": 0,
   "types": {
-    "original": 72
+    "original": 1000
   },
-  "numericVariants": 0,
-  "numericFamilies": 0,
+  "conceptQuestions": 72,
+  "numericVariants": 928,
+  "numericFamilies": 32,
+  "variantsPerFamily": {
+    "EXC-hydraulicForce": 29,
+    "EXC-annularForce": 29,
+    "EXC-requiredPressure": 29,
+    "EXC-pumpFlow": 29,
+    "EXC-cylinderSpeed": 29,
+    "EXC-cylinderTime": 29,
+    "EXC-cylinderVolume": 29,
+    "EXC-hydraulicPower": 29,
+    "EXC-pumpInputPower": 29,
+    "EXC-motorTorque": 29,
+    "EXC-motorSpeed": 29,
+    "EXC-overallEfficiency": 29,
+    "EXC-engineDisplacement": 29,
+    "EXC-engineTorque": 29,
+    "EXC-fuelRate": 29,
+    "EXC-fuelEndurance": 29,
+    "EXC-trenchVolume": 29,
+    "EXC-looseVolume": 29,
+    "EXC-bucketOutput": 29,
+    "EXC-cycleTime": 29,
+    "EXC-truckTrips": 29,
+    "EXC-soilMass": 29,
+    "EXC-groundPressure": 29,
+    "EXC-gradePercent": 29,
+    "EXC-travelDistance": 29,
+    "EXC-travelTime": 29,
+    "EXC-loadMoment": 29,
+    "EXC-mechanicalWork": 29,
+    "EXC-averagePower": 29,
+    "EXC-batteryEnergy": 29,
+    "EXC-electricalPower": 29,
+    "EXC-voltageDrop": 29
+  },
   "subjects": {
-    "굴착기 조종, 점검 및 안전관리": 72
+    "굴착기 조종, 점검 및 안전관리": 1000
   },
   "topics": {
-    "기관 기초": 12,
-    "유압장치": 12,
-    "전기·동력전달": 12,
-    "작업장치·점검": 12,
-    "조종·작업": 12,
-    "현장 안전": 12
+    "기관 기초": 128,
+    "유압장치": 360,
+    "전기·동력전달": 99,
+    "작업장치·점검": 99,
+    "조종·작업": 186,
+    "현장 안전": 128
   },
-  "sha256": "5072b4eb0344f66017b4abf302d869035aceb397864f6b1fb5fde7d614bfb5e0",
+  "sha256": "3aa2631b9cb510d3e6ff4f248d640004c1f89047578c120bb4b82a7bcddad861",
   "scope": "Structure, exact/normalized duplicates and deterministic reproduction only; not expert review or official syllabus verification"
 }

@@ -1,8 +1,9 @@
 """Deterministic serialization of authored concepts, not scraped exam questions.
-No numeric variants. The source rows and review scope are retained for audit.
+Original 72 rows are preserved; numeric models are explicitly separate.
 """
 import csv
 import json
+from numeric_bank import build_numeric_bank
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -98,7 +99,7 @@ def build():
             verificationStatus='reviewed',
             reviewNote='AI 일반 지식으로 자체 작성. 문장·정답의 내부 검토만 수행; 외부 전문가 검수·공식 출제기준 대조 미완료. 저장소 링크는 작성·검토 기록이며 외부 정답 증빙이 아님.',
             version='main', rights='자체 제작 원고: CC BY 4.0, Craftsman-Excavator-Operation-CBT contributors. 공식 기출·복원 아님.'))
-    return bank
+    return bank + build_numeric_bank()
 
 if __name__ == '__main__':
     bank = build()
@@ -114,4 +115,4 @@ if __name__ == '__main__':
         writer = csv.DictWriter(f, fieldnames=list(template), lineterminator="\n")
         writer.writeheader()
         writer.writerow(template)
-    print(f'{len(bank)} questions; no numeric variants; original only')
+    print(f'{len(bank)} questions; 72 concepts + 928 numeric variants / 32 families; original only')

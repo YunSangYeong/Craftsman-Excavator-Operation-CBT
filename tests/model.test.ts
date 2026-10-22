@@ -1,24 +1,30 @@
+import {createHash} from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { answerExam, BASE_BANK, checkPractice, createExam, emptyStore, fingerprint, grade,
   importQuestions, nextPractice, parseCsv, remainingSeconds, restoreStore, startPractice,
   SUBJECTS, submitExam, validateQuestion } from "../src/model";
 const bank = BASE_BANK;
 describe("대상 문제은행", () => {
-  it("중복 제거된 자체 제작 72문항, 기출·복원·수치변형 없음", () => {
-    expect(bank).toHaveLength(72);
-    expect(new Set(bank.map(q => q.id)).size).toBe(72);
-    expect(new Set(bank.map(fingerprint)).size).toBe(72);
+  it("기존 72문항의 ID·본문·보기·정답·해설·메타데이터를 보존한다", () => {
+    expect(createHash("sha256").update(JSON.stringify(bank.slice(0,72))).digest("hex")).toBe("3d0f1ac64862e663ccdc577acdb7401302fbd082033939316a31b1ec4def763c");
+  });
+  it("중복 제거된 자체 제작 1,000문항, 원문 기출·복원 없음", () => {
+    expect(bank).toHaveLength(1000);
+    expect(new Set(bank.map(q => q.id)).size).toBe(1000);
+    expect(new Set(bank.map(fingerprint)).size).toBe(1000);
     for (const q of bank) {
       validateQuestion(q);
       expect(q.type).toBe("original"); expect(q.verificationStatus).toBe("reviewed");
       expect(q.year).toBeNull(); expect(q.session).toBeNull();
-      expect(q.family).toBeUndefined(); expect(q.calculation).toBeUndefined();
+      if (!q.calculation) { expect(q.family).toBeUndefined(); }
       expect(q.rights).toContain("CC BY 4.0");
       expect(q.explanation.length).toBeGreaterThan(30);
     }
     expect(new Set(bank.map(q => q.topic)).size).toBe(6);
-    for (const topic of new Set(bank.map(q => q.topic)))
-      expect(bank.filter(q => q.topic === topic)).toHaveLength(12);
+    const counts = {"기관 기초":128,"유압장치":360,"전기·동력전달":99,"작업장치·점검":99,"조종·작업":186,"현장 안전":128};
+    for (const [topic,count] of Object.entries(counts))
+      expect(bank.filter(q=>q.topic===topic)).toHaveLength(count);
+    expect(bank.filter(q=>!q.calculation)).toHaveLength(72);
   });
   it("같은 ID와 본문 중복이 입력되어도 시험에 두 번 뽑지 않는다", () => {
     const exam = createExam([...bank, bank[0], {...bank[1], id:"DUPLICATE"}], "main");
@@ -117,12 +123,12 @@ describe("랜덤 학습", () => {
   it("한 과목의 모든 문항을 순회하기 전에는 중복이 없다", () => {
     let p = startPractice(bank, "main", SUBJECTS[0]);
     const ids = new Set<string>();
-    for (let i = 0; i < 72; i++) {
+    for (let i = 0; i < 1000; i++) {
       expect(ids.has(p.currentId)).toBe(false);
       ids.add(p.currentId);
       p = nextPractice(p, bank);
     }
-    expect(ids.size).toBe(72);
+    expect(ids.size).toBe(1000);
     expect(p.subject).toBe(SUBJECTS[0]);
   });
   it("즉시 채점·연속 정답·통계를 저장하며 중복 채점을 방지한다", () => {

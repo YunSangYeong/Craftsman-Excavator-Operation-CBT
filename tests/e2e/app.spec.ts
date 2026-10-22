@@ -32,7 +32,7 @@ test("학습 기준 선택 없음·모바일 화면·기록 복원", async ({ pa
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
-  await expect(page.locator(".bank-summary")).toContainText(/등록\s*72문항/);
+  await expect(page.locator(".bank-summary")).toContainText(/등록\s*1000문항/);
   await expect(page.getByLabel("학습 기준")).toHaveCount(0);
   await expect(page.locator("main")).not.toContainText("학습 기준");
   await expect(page.locator("main")).not.toContainText("2027–2029");
@@ -197,7 +197,7 @@ test("JSON 등록·중복 제거·검수 대기·사용자 검수·CSV 등록·�
   await expectNoDefaultVersionYears(page);
   await expect(page.locator(".bank-filter")).toContainText("기본 문제은행");
   await expect(page.locator(".bank-row")).toHaveCount(20);
-  await expect(page.locator(".pagination")).toContainText("1 / 4");
+  await expect(page.locator(".pagination")).toContainText("1 / 50");
   await page.getByLabel("문항 검색", { exact: true }).fill("EXC-C-072");
   await expect(page.locator(".bank-row")).toHaveCount(1);
   await page.locator(".bank-row summary").click();
@@ -530,4 +530,25 @@ test('모든 주요 화면 상단 배너 없음·기록 백업·저장 실패 �
   },key);
   await page.reload();
   await expect(page.getByRole('alert')).toBeVisible();
+});
+
+
+test('1,000문항 실제 목록·수치변형 출처·마지막 페이지', async ({page}) => {
+  await page.goto('');
+  await expect(page.locator('.bank-summary')).toContainText('계산 조건 변형 928 (32유형)');
+  await nav(page,'문제은행 관리');
+  await expect(page.locator('main')).toContainText('개념형 72문항, 숫자 조건 변형 928문항');
+  await expect(page.locator('main')).toContainText('부족 0문항');
+  await page.getByLabel('문항 검색',{exact:true}).fill('EXC-N-32-29');
+  await expect(page.locator('.bank-row')).toHaveCount(1);
+  await page.locator('.bank-row summary').click();
+  await expect(page.locator('.bank-row .explanation')).toContainText('숫자 조건 변형');
+  await expect(page.locator('.bank-row .explanation')).toContainText('왕복 전체 저항');
+  await expect(page.locator('.bank-row .explanation')).toContainText('외부 전문가 검수');
+  await expect(page.locator('.bank-row .source')).toContainText('CC BY 4.0');
+  await page.getByLabel('문항 검색',{exact:true}).fill('');
+  for(let i=1;i<50;i++) await page.locator('.pagination').getByRole('button',{name:'다음',exact:true}).click();
+  await expect(page.locator('.pagination')).toContainText('50 / 50');
+  await expect(page.locator('.bank-row')).toHaveCount(20);
+  await expect(page.locator('.bank-row')).toContainText(['EXC-N-32-10','EXC-N-32-11','EXC-N-32-12','EXC-N-32-13','EXC-N-32-14','EXC-N-32-15','EXC-N-32-16','EXC-N-32-17','EXC-N-32-18','EXC-N-32-19','EXC-N-32-20','EXC-N-32-21','EXC-N-32-22','EXC-N-32-23','EXC-N-32-24','EXC-N-32-25','EXC-N-32-26','EXC-N-32-27','EXC-N-32-28','EXC-N-32-29']);
 });

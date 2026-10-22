@@ -156,6 +156,7 @@ function Source({ q }: { q: Question }) {
   return (
     <div className="source">
       <span className="tag">{TYPE_LABEL[q.type]}</span>
+      {q.calculation && <span className="tag">숫자 조건 변형</span>}
       <span>
         {q.year
           ? `${q.year}년 ${q.session ? `${q.session}회차` : ""}`
@@ -866,6 +867,7 @@ function App() {
                     {bank.filter((q) => q.type === "past").length} · 복원{" "}
                     {bank.filter((q) => q.type === "reconstructed").length} ·
                     자체 제작 {bank.filter((q) => q.type === "original").length}{" "}
+                    · 계산 조건 변형 {bank.filter(q => q.calculation).length} ({new Set(bank.flatMap(q => q.family ? [q.family] : [])).size}유형)
                     · 내부 검수{" "}
                     {
                       bank.filter((q) => q.verificationStatus === "reviewed")
@@ -1781,7 +1783,7 @@ function BankManager({
           </strong>
           <br />
           원문 기출 0 · 복원문제 0. 공식 자료 접근 제한으로 기출 원문 및
-          출제기준 대조는 완료하지 못했습니다. 기본 문항은 AI 일반 지식으로 자체 작성한 개념형이며 문장·정답 내부 검토만 수행했습니다. 외부 전문가 검수는 받지 않았습니다. 목표 1,000문항 중 기본 등록 {BASE_BANK.length}문항, 부족 {Math.max(0, QUALIFICATION.targetReviewedCount - BASE_BANK.length)}문항입니다. 숫자 조건 변형 0개입니다.
+          출제기준 대조는 완료하지 못했습니다. 기본 문항은 AI 일반 지식으로 자체 작성했습니다. 개념형 {BASE_BANK.filter(q => !q.calculation).length}문항, 숫자 조건 변형 {BASE_BANK.filter(q => q.calculation).length}문항 ({new Set(BASE_BANK.flatMap(q => q.family ? [q.family] : [])).size}개 계산 유형)입니다. 유형별 문장·가정 내부 검토와 별도 계산 테스트를 수행했으며 외부 전문가 검수는 받지 않았습니다. 목표 1,000문항 중 기본 등록 {BASE_BANK.length}문항, 부족 {Math.max(0, QUALIFICATION.targetReviewedCount - BASE_BANK.length)}문항입니다. 숫자 변형은 서로 독립된 개념이나 기출 수를 뜻하지 않습니다.
           <p>시험 규칙 상태: 공식 확인 대기. 현재 {EXAM_RULES.questionCount}문항 · {EXAM_RULES.durationMinutes}분 · {EXAM_RULES.choiceCount}지선다 · {EXAM_RULES.maxScore}점 환산 · {EXAM_RULES.passScore}점 이상 · 과락 없음은 학습용 가정입니다. 미응답은 오답으로 처리합니다. 공식 과목명·문항수·시간·채점·합격 규칙은 수험 전 Q-Net에서 확인하세요.</p>
           <a href={QUALIFICATION.verification.officialSource} target="_blank" rel="noreferrer">Q-Net 종목 정보 ↗</a>
         </div>
